@@ -165,6 +165,9 @@ nonisolated struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
         case .image(content: let imageMessageContent):
             return buildImageTimelineItem(for: eventItemProxy, messageLikeContent, messageContent, imageMessageContent, isOutgoing)
         case .video(let videoMessageContent):
+            if isVideoNote(eventItemProxy) {
+                return buildVideoNoteTimelineItem(for: eventItemProxy, messageLikeContent, messageContent, videoMessageContent, isOutgoing)
+            }
             return buildVideoTimelineItem(for: eventItemProxy, messageLikeContent, messageContent, videoMessageContent, isOutgoing)
         case .file(let fileMessageContent):
             return buildFileTimelineItem(for: eventItemProxy, messageLikeContent, messageContent, fileMessageContent, isOutgoing)
@@ -257,6 +260,37 @@ nonisolated struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
                                                 orderedReadReceipts: buildOrderedReadReceipts(eventItemProxy.readReceipts),
                                                 encryptionAuthenticity: buildEncryptionAuthenticity(eventItemProxy.shieldState),
                                                 encryptionForwarder: eventItemProxy.forwarder))
+    }
+
+    private func buildVideoNoteTimelineItem(for eventItemProxy: EventTimelineItemProxy,
+                                              _ messageLikeContent: MsgLikeContent,
+                                              _ messageContent: MessageContent,
+                                              _ videoMessageContent: VideoMessageContent,
+                                              _ isOutgoing: Bool) -> RoomTimelineItemProtocol {
+        VideoNoteRoomTimelineItem(id: eventItemProxy.id,
+                                  timestamp: eventItemProxy.timestamp,
+                                  isOutgoing: isOutgoing,
+                                  isEditable: eventItemProxy.isEditable,
+                                  canBeRepliedTo: eventItemProxy.canBeRepliedTo,
+                                  shouldBoost: eventItemProxy.shouldBoost,
+                                  sender: eventItemProxy.sender,
+                                  content: buildVideoTimelineItemContent(videoMessageContent),
+                                  properties: .init(replyDetails: buildTimelineItemReplyDetails(messageLikeContent.inReplyTo),
+                                                    isThreaded: messageLikeContent.threadRoot != nil,
+                                                    threadSummary: buildTimelineItemThreadSummary(messageLikeContent.threadSummary),
+                                                    isEdited: messageContent.isEdited,
+                                                    reactions: buildAggregatedReactions(messageLikeContent.reactions),
+                                                    deliveryStatus: eventItemProxy.deliveryStatus,
+                                                    orderedReadReceipts: buildOrderedReadReceipts(eventItemProxy.readReceipts),
+                                                    encryptionAuthenticity: buildEncryptionAuthenticity(eventItemProxy.shieldState),
+                                                    encryptionForwarder: eventItemProxy.forwarder))
+    }
+
+    private func isVideoNote(_ eventItemProxy: EventTimelineItemProxy) -> Bool {
+        guard let originalJSON = eventItemProxy.debugInfo.originalJSON else {
+            return false
+        }
+        return originalJSON.contains("\"org.mychat.video_note\": true")
     }
     
     private func buildAudioTimelineItem(for eventItemProxy: EventTimelineItemProxy,

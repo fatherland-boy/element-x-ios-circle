@@ -99,6 +99,8 @@ final class RoomScreenCoordinator: CoordinatorProtocol {
                                                         parserStyle: .elementX)
         let composerViewModel = ComposerToolbarViewModel(initialText: parameters.sharedText,
                                                          roomProxy: parameters.roomProxy,
+                                                         timelineController: parameters.timelineController,
+                                                         videoNoteProcessor: VideoNoteProcessor(),
                                                          wysiwygViewModel: wysiwygViewModel,
                                                          completionSuggestionService: parameters.completionSuggestionService,
                                                          mediaProvider: parameters.userSession.mediaProvider,

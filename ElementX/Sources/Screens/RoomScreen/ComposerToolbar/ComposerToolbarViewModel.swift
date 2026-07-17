@@ -20,6 +20,8 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
     private let wysiwygViewModel: WysiwygComposerViewModel
     private let completionSuggestionService: CompletionSuggestionServiceProtocol
     private let roomProxy: JoinedRoomProxyProtocol
+    private let timelineController: TimelineControllerProtocol
+    private let videoNoteProcessor: VideoNoteProcessorProtocol
     private let analyticsService: AnalyticsServiceProtocol
     private let draftService: ComposerDraftServiceProtocol
     private var identityPinningViolations = [String: RoomMemberProxyProtocol]()
@@ -47,6 +49,8 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
     
     init(initialText: String? = nil,
          roomProxy: JoinedRoomProxyProtocol,
+         timelineController: TimelineControllerProtocol,
+         videoNoteProcessor: VideoNoteProcessorProtocol,
          wysiwygViewModel: WysiwygComposerViewModel,
          completionSuggestionService: CompletionSuggestionServiceProtocol,
          mediaProvider: MediaProviderProtocol,
@@ -55,10 +59,12 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
          analyticsService: AnalyticsServiceProtocol,
          composerDraftService: ComposerDraftServiceProtocol) {
         self.initialText = initialText
+        self.roomProxy = roomProxy
+        self.timelineController = timelineController
+        self.videoNoteProcessor = videoNoteProcessor
         self.wysiwygViewModel = wysiwygViewModel
         self.completionSuggestionService = completionSuggestionService
         self.analyticsService = analyticsService
-        self.roomProxy = roomProxy
         draftService = composerDraftService
         
         mentionBuilder = MentionBuilder()
@@ -67,6 +73,7 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
         super.init(initialViewState: ComposerToolbarViewState(wysiwygViewModel: wysiwygViewModel,
                                                               audioPlayerState: .init(id: .recorderPreview, title: L10n.commonVoiceMessage, duration: 0),
                                                               audioRecorderState: .init(),
+                                                              videoNoteRecorderState: .init(),
                                                               isRoomEncrypted: roomProxy.infoPublisher.value.isEncrypted,
                                                               isLocationSharingEnabled: appSettings.mapTilerSettings.publisher.value.isEnabled,
                                                               bindings: .init()),
@@ -234,6 +241,8 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
             handleSuggestion(suggestion)
         case .voiceMessage(let voiceMessageAction):
             processVoiceMessageAction(voiceMessageAction)
+        case .videoNote(let videoNoteAction):
+            processVideoNoteAction(videoNoteAction)
         case .plainComposerTextChanged:
             completionSuggestionService.processTextMessage(state.bindings.plainComposerText.string, selectedRange: context.viewState.bindings.selectedRange)
         case .selectedTextChanged:
@@ -477,6 +486,62 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
             break
         }
     }
+
+    private func processVideoNoteAction(_ action: ComposerToolbarVideoMessageAction) {
+        switch action {
+        case .startRecording:
+            state.bindings.composerFormattingEnabled = false
+            let recorderState = VideoNoteRecorderState()
+            let recorder = VideoNoteRecorder()
+            recorderState.attachVideoRecorder(recorder)
+            set(mode: .recordVideoNote(state: recorderState))
+            actionsSubject.send(.videoNote(.startRecording))
+        case .stopRecording:
+            actionsSubject.send(.videoNote(.stopRecording))
+        case .cancelRecording:
+            set(mode: .default)
+            actionsSubject.send(.videoNote(.cancelRecording))
+        case .deleteRecording:
+            actionsSubject.send(.videoNote(.deleteRecording))
+        case .startPlayback:
+            actionsSubject.send(.videoNote(.startPlayback))
+        case .pausePlayback:
+            actionsSubject.send(.videoNote(.pausePlayback))
+        case .scrubPlayback(let scrubbing):
+            actionsSubject.send(.videoNote(.scrubPlayback(scrubbing: scrubbing)))
+        case .seekPlayback(let progress):
+            actionsSubject.send(.videoNote(.seekPlayback(progress: progress)))
+        case .send:
+            guard case let .recordVideoNote(state) = state.composerMode,
+                  let recorder = state.videoRecorder else {
+                return
+            }
+
+            Task {
+                guard let url = recorder.videoFileURL else { return }
+
+                do {
+                    let processedURL = try await videoNoteProcessor.processVideo(at: url, maxUploadSize: 10 * 1024 * 1024)
+                    let thumbnailURL = try await videoNoteProcessor.generateThumbnail(from: processedURL)
+
+                    // Note: In a real scenario, we'd construct VideoInfo from the processed asset.
+                    let videoInfo = VideoInfoProxy.mockVideo
+
+                    let result = await timelineController.sendVideoNote(url: processedURL,
+                                                                      thumbnailURL: thumbnailURL,
+                                                                      videoInfo: videoInfo,
+                                                                      caption: nil,
+                                                                      requestHandle: { _ in })
+
+                    if case .failure(let error) = result {
+                        MXLog.error("Failed to send video note: \(error)")
+                    }
+                } catch {
+                    MXLog.error("Failed to process video note: \(error)")
+                }
+            }
+        }
+    }
     
     private func setupMentionsHandling(mentionDisplayHelper: MentionDisplayHelper) {
         wysiwygViewModel.mentionDisplayHelper = mentionDisplayHelper
@@ -582,6 +647,8 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
             break
         case .recordVoiceMessage(let audioRecorderState):
             state.audioRecorderState = audioRecorderState
+        case .recordVideoNote(let videoNoteRecorderState):
+            state.videoNoteRecorderState = videoNoteRecorderState
         case .previewVoiceMessage(let audioPlayerState, _, _):
             state.audioPlayerState = audioPlayerState
         case .edit, .reply:

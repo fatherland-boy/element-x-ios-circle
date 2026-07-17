@@ -11,6 +11,18 @@ import MatrixRustSDK
 import SwiftUI
 import WysiwygComposer
 
+enum ComposerToolbarVideoMessageAction {
+    case startRecording
+    case stopRecording
+    case cancelRecording
+    case deleteRecording
+    case startPlayback
+    case pausePlayback
+    case scrubPlayback(scrubbing: Bool)
+    case seekPlayback(progress: Double)
+    case send
+}
+
 enum ComposerToolbarVoiceMessageAction {
     case startRecording
     case stopRecording
@@ -27,21 +39,22 @@ enum ComposerToolbarViewModelAction {
     case sendMessage(plain: String, html: String?, mode: ComposerMode, intentionalMentions: IntentionalMentions)
     case editLastMessage
     case attach(ComposerAttachmentType)
-    
+
     case handlePasteOrDrop(providers: [NSItemProvider])
-    
+
     case composerModeChanged(mode: ComposerMode)
     case composerFocusedChanged(isFocused: Bool)
-    
+
     case voiceMessage(ComposerToolbarVoiceMessageAction)
-    
+    case videoNote(ComposerToolbarVideoMessageAction)
+
     case contentChanged(isEmpty: Bool)
 }
 
 enum ComposerToolbarViewAction {
     case composerAppeared
     case composerDisappeared
-    
+
     case sendMessage
     case editLastMessage
     case cancelReply
@@ -51,9 +64,10 @@ enum ComposerToolbarViewAction {
     case enableTextFormatting
     case composerAction(action: ComposerAction)
     case selectedSuggestion(_ suggestion: SuggestionItem)
-    
+
     case voiceMessage(ComposerToolbarVoiceMessageAction)
-    
+    case videoNote(ComposerToolbarVideoMessageAction)
+
     case plainComposerTextChanged
     case didToggleFormattingOptions
     case selectedTextChanged
@@ -77,8 +91,10 @@ struct ComposerToolbarViewState: BindableState {
     var suggestions: [SuggestionItem] = []
     var audioPlayerState: AudioPlayerState
     var audioRecorderState: AudioRecorderState
-    
+    var videoNoteRecorderState: VideoNoteRecorderState
+
     var isRoomEncrypted: Bool
+
     var isLocationSharingEnabled: Bool
     
     var keyCommands: [WysiwygKeyCommand] = []
@@ -136,6 +152,15 @@ struct ComposerToolbarViewState: BindableState {
     var isVoiceMessageModeActivated: Bool {
         switch composerMode {
         case .recordVoiceMessage, .previewVoiceMessage:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isVideoNoteModeActivated: Bool {
+        switch composerMode {
+        case .recordVideoNote:
             return true
         default:
             return false
@@ -335,7 +360,9 @@ enum ComposerMode: Equatable {
     case reply(eventID: String, replyDetails: TimelineItemReplyDetails, isThread: Bool)
     case edit(originalEventOrTransactionID: TimelineItemIdentifier.EventOrTransactionID, type: EditType)
     case recordVoiceMessage(state: AudioRecorderState)
+    case recordVideoNote(state: VideoNoteRecorderState)
     case previewVoiceMessage(state: AudioPlayerState, waveform: WaveformSource, isUploading: Bool)
+
     
     var isEdit: Bool {
         switch self {

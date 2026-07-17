@@ -106,8 +106,13 @@ struct ComposerToolbar: View {
                     sendButton
                         .scaledPadding(.vertical, trailingButtonVerticalPadding, relativeTo: .compound.headingLG)
                 } else {
-                    voiceMessageRecordingButton(mode: context.viewState.isVoiceMessageModeActivated ? .recording : .idle)
-                        .scaledPadding(.vertical, trailingButtonVerticalPadding, relativeTo: .compound.headingLG)
+                    HStack(spacing: 8) {
+                        voiceMessageRecordingButton(mode: context.viewState.isVoiceMessageModeActivated ? .recording : .idle)
+                            .scaledPadding(.vertical, trailingButtonVerticalPadding, relativeTo: .compound.headingLG)
+
+                        videoNoteRecordingButton(mode: context.viewState.isVideoNoteModeActivated ? .recording : .idle)
+                            .scaledPadding(.vertical, trailingButtonVerticalPadding, relativeTo: .compound.headingLG)
+                    }
                 }
             }
         }
@@ -142,13 +147,13 @@ struct ComposerToolbar: View {
             }
             .opacity(context.viewState.isVoiceMessageModeActivated ? 0 : 1)
             
-            if context.viewState.isVoiceMessageModeActivated {
-                voiceMessageContent
+            if context.viewState.isVoiceMessageModeActivated || context.viewState.isVideoNoteModeActivated {
+                recordingContent
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
-    
+
     private var closeRTEButton: some View {
         Button {
             context.composerFormattingEnabled = false
@@ -274,14 +279,20 @@ struct ComposerToolbar: View {
     // MARK: - Voice message
     
     @ViewBuilder
-    private var voiceMessageContent: some View {
-        // Display the voice message composer above to keep the focus and keep the keyboard open if it's already open.
+    private var recordingContent: some View {
+        // Display the recording composer above to keep the focus and keep the keyboard open if it's already open.
         switch context.viewState.composerMode {
         case .recordVoiceMessage(let state):
             topBarLayout {
                 voiceMessageTrashButton
                     .scaledPadding(.vertical, buttonVerticalPadding, relativeTo: .compound.headingLG)
                 VoiceMessageRecordingComposer(recorderState: state)
+            }
+        case .recordVideoNote(let state):
+            topBarLayout {
+                videoNoteTrashButton
+                    .scaledPadding(.vertical, buttonVerticalPadding, relativeTo: .compound.headingLG)
+                VideoNoteRecordingComposer(recorderState: state)
             }
         case .previewVoiceMessage(let state, let waveform, let isUploading):
             topBarLayout {
@@ -294,7 +305,7 @@ struct ComposerToolbar: View {
             EmptyView()
         }
     }
-    
+
     private func voiceMessageRecordingButton(mode: VoiceMessageRecordingButtonMode) -> some View {
         VoiceMessageRecordingButton(mode: mode) {
             context.send(viewAction: .voiceMessage(.startRecording))
@@ -302,14 +313,29 @@ struct ComposerToolbar: View {
             context.send(viewAction: .voiceMessage(.stopRecording))
         }
     }
-    
+
+    private func videoNoteRecordingButton(mode: VideoNoteRecordingButtonMode) -> some View {
+        VideoNoteRecordingButton(mode: mode) {
+            context.send(viewAction: .videoNote(.startRecording))
+        } stopRecording: {
+            context.send(viewAction: .videoNote(.stopRecording))
+        }
+    }
+
     private var voiceMessageTrashButton: some View {
         VoiceMessageTrashButton {
             context.send(viewAction: .voiceMessage(.deleteRecording))
         }
         .accessibilityLabel(L10n.a11yDelete)
     }
-    
+
+    private var videoNoteTrashButton: some View {
+        VoiceMessageTrashButton {
+            context.send(viewAction: .videoNote(.deleteRecording))
+        }
+        .accessibilityLabel(L10n.a11yDelete)
+    }
+
     private func voiceMessagePreviewComposer(audioPlayerState: AudioPlayerState, waveform: WaveformSource) -> some View {
         VoiceMessagePreviewComposer(playerState: audioPlayerState, waveform: waveform) {
             context.send(viewAction: .voiceMessage(.startPlayback))

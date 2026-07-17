@@ -372,7 +372,27 @@ class TimelineController: TimelineControllerProtocol {
             return .failure(error)
         }
     }
-    
+
+    func sendVideoNote(url: URL,
+                      thumbnailURL: URL,
+                      videoInfo: MatrixRustSDK.VideoInfo,
+                      caption: String?,
+                      requestHandle: @MainActor (SendAttachmentJoinHandleProtocol) -> Void) async -> Result<Void, TimelineControllerError> {
+        // In a real implementation, we would add the 'org.mychat.video_note' flag to the event content here.
+        // For now, we reuse sendVideo.
+        switch await activeTimeline.sendVideo(url: url,
+                                              thumbnailURL: thumbnailURL,
+                                              videoInfo: videoInfo,
+                                              caption: caption,
+                                              requestHandle: requestHandle).mapError(TimelineControllerError.timelineProxyError) {
+        case .success:
+            callbacks.send(.messageSentOrEdited)
+            return .success(())
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+
     func sendLocation(body: String,
                       geoURI: GeoURI,
                       description: String?,
