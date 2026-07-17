@@ -29,5 +29,4 @@ jobs:
           xcodebuild -scheme ElementX \
                      -sdk iphoneos \
                      -destination 'generic/platform=iOS' \
-                     -sdd build \
                      build
