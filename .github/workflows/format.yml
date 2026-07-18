@@ -1,0 +1,34 @@
+name: iOS Format
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    name: Format
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: nschloe/action-cached-lfs-checkout@385a8ecc719e50b8c71af6ab01a624b486b7c3bc
+        with:
+          persist-credentials: false
+
+      - name: Setup environment
+        run: source ci_scripts/ci_common.sh && setup_github_actions_environment
+
+      - name: Apply Formatting
+        run: |
+          swiftformat .
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Changes detected after formatting. Committing..."
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add .
+            git commit -m "style: apply swiftformat"
+            git push origin HEAD:${{ github.ref }}
+          else
+            echo "No formatting changes needed."
+          fi
