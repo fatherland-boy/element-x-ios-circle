@@ -8,25 +8,17 @@ on:
 
 jobs:
   build:
+    name: Build and Unit Tests
     runs-on: macos-latest
-
+    timeout-minutes: 60
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: nschloe/action-cached-lfs-checkout@385a8ecc719e50b8c71af6ab01a624b486b7c3bc
+        with:
+          persist-credentials: false
 
-      - name: Set up Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+      - name: Setup environment
+        run: source ci_scripts/ci_common.sh && setup_github_actions_environment
 
-      - name: Install Dependencies
-        run: |
-          # Element X usually uses Swift Package Manager (SPM),
-          # so we just need to ensure the project can resolve them.
-          # No separate install step usually needed for pure SPM projects.
-          echo "Resolving dependencies..."
-
-      - name: Build Project
-        run: |
-          xcodebuild -scheme ElementX \
-                     -sdk iphonesimulator \
-                     -destination 'platform=iOS Simulator' \
-                     build
+      - name: Run Build and Unit Tests
+        run: swift run -q tools ci unit-tests
