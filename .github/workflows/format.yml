@@ -2,8 +2,6 @@ name: iOS Format
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ feature/video-notes ]
 
 permissions:
   contents: write
