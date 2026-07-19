@@ -1,6 +1,7 @@
 name: iOS Build Check
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main, feature/video-notes ]
   pull_request:
@@ -13,7 +14,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout code
-        uses: nschloe/action-cached-lfs-checkout@385a8ecc719e50b8c71af6ab01a624b486b7c3bc
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
