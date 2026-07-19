@@ -28,7 +28,7 @@ final class VideoNoteProcessor: VideoNoteProcessorProtocol {
             throw NSError(domain: "VideoNoteProcessor", code: 1, userInfo: [NSLocalizedDescriptionKey: "No video track found"])
         }
         
-        let compositionVideoTrack = composition.addMutableTrack(withMediaType: .video, preferredCrtite: .none)
+        let compositionVideoTrack = composition.addMutableTrack(withMediaType: .video)
         try compositionVideoTrack?.insertTimeRange(CMRange(start: .zero, duration: videoTrack.timeRange.duration), from: videoTrack, at: .zero)
         
         let videoComposition = AVMutableVideoComposition()

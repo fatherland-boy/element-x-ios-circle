@@ -86,13 +86,15 @@ final class ComposerToolbarViewModelTests {
         let appSettings = AppSettings.volatile()
         
         viewModel = ComposerToolbarViewModel(roomProxy: JoinedRoomProxyMock(.init()),
-                                             wysiwygViewModel: wysiwygViewModel,
-                                             completionSuggestionService: mockCompletionSuggestionService,
-                                             mediaProvider: MediaProviderMock(.init()),
-                                             mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
-                                             appSettings: appSettings,
-                                             analyticsService: AnalyticsServiceMock(.init()),
-                                             composerDraftService: draftServiceMock)
+                                                 timelineController: TimelineControllerMock(.init()),
+                                                 videoNoteProcessor: VideoNoteProcessor(),
+                                                 wysiwygViewModel: wysiwygViewModel,
+                                                 completionSuggestionService: mockCompletionSuggestionService,
+                                                 mediaProvider: MediaProviderMock(.init()),
+                                                 mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
+                                                 appSettings: appSettings,
+                                                 analyticsService: AnalyticsServiceMock(.init()),
+                                                 composerDraftService: draftServiceMock)
         
         #expect(viewModel.state.suggestions == suggestions)
     }
@@ -705,13 +707,15 @@ final class ComposerToolbarViewModelTests {
         let appSettings = AppSettings.volatile()
         
         viewModel = ComposerToolbarViewModel(roomProxy: roomProxyMock,
-                                             wysiwygViewModel: wysiwygViewModel,
-                                             completionSuggestionService: mockCompletionSuggestionService,
-                                             mediaProvider: MediaProviderMock(.init()),
-                                             mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
-                                             appSettings: appSettings,
-                                             analyticsService: AnalyticsServiceMock(.init()),
-                                             composerDraftService: draftServiceMock)
+                                                 timelineController: TimelineControllerMock(.init()),
+                                                 videoNoteProcessor: VideoNoteProcessor(),
+                                                 wysiwygViewModel: wysiwygViewModel,
+                                                 completionSuggestionService: mockCompletionSuggestionService,
+                                                 mediaProvider: MediaProviderMock(.init()),
+                                                 mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
+                                                 appSettings: appSettings,
+                                                 analyticsService: AnalyticsServiceMock(.init()),
+                                                 composerDraftService: draftServiceMock)
         
         var fulfillment = deferFulfillment(viewModel.context.$viewState, message: "Composer is disabled") { $0.canSend == false }
         mockSubject.send([IdentityStatusChange(userId: "@alice:localhost", changedTo: .verificationViolation)])
@@ -748,13 +752,15 @@ final class ComposerToolbarViewModelTests {
         let appSettings = AppSettings.volatile()
         
         viewModel = ComposerToolbarViewModel(roomProxy: roomProxyMock,
-                                             wysiwygViewModel: wysiwygViewModel,
-                                             completionSuggestionService: mockCompletionSuggestionService,
-                                             mediaProvider: MediaProviderMock(.init()),
-                                             mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
-                                             appSettings: appSettings,
-                                             analyticsService: AnalyticsServiceMock(.init()),
-                                             composerDraftService: draftServiceMock)
+                                                 timelineController: TimelineControllerMock(.init()),
+                                                 videoNoteProcessor: VideoNoteProcessor(),
+                                                 wysiwygViewModel: wysiwygViewModel,
+                                                 completionSuggestionService: mockCompletionSuggestionService,
+                                                 mediaProvider: MediaProviderMock(.init()),
+                                                 mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
+                                                 appSettings: appSettings,
+                                                 analyticsService: AnalyticsServiceMock(.init()),
+                                                 composerDraftService: draftServiceMock)
         
         var fulfillment = deferFulfillment(viewModel.context.$viewState, message: "Composer is disabled") { $0.canSend == false }
         mockSubject.send([
@@ -788,13 +794,15 @@ final class ComposerToolbarViewModelTests {
         let appSettings = AppSettings.volatile()
         
         viewModel = ComposerToolbarViewModel(roomProxy: roomProxyMock,
-                                             wysiwygViewModel: wysiwygViewModel,
-                                             completionSuggestionService: mockCompletionSuggestionService,
-                                             mediaProvider: MediaProviderMock(.init()),
-                                             mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
-                                             appSettings: appSettings,
-                                             analyticsService: AnalyticsServiceMock(.init()),
-                                             composerDraftService: draftServiceMock)
+                                                 timelineController: TimelineControllerMock(.init()),
+                                                 videoNoteProcessor: VideoNoteProcessor(),
+                                                 wysiwygViewModel: wysiwygViewModel,
+                                                 completionSuggestionService: mockCompletionSuggestionService,
+                                                 mediaProvider: MediaProviderMock(.init()),
+                                                 mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
+                                                 appSettings: appSettings,
+                                                 analyticsService: AnalyticsServiceMock(.init()),
+                                                 composerDraftService: draftServiceMock)
         
         let deferred = deferFulfillment(viewModel.context.$viewState, message: "Composer should be enabled") { $0.canSend == true }
         try await deferred.fulfill()
@@ -814,6 +822,8 @@ final class ComposerToolbarViewModelTests {
         
         viewModel = ComposerToolbarViewModel(initialText: initialText,
                                              roomProxy: JoinedRoomProxyMock(.init()),
+                                             timelineController: TimelineControllerMock(.init()),
+                                             videoNoteProcessor: VideoNoteProcessor(),
                                              wysiwygViewModel: wysiwygViewModel,
                                              completionSuggestionService: completionSuggestionServiceMock,
                                              mediaProvider: MediaProviderMock(.init()),

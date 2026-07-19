@@ -80,6 +80,8 @@ final class ThreadTimelineScreenCoordinator: CoordinatorProtocol {
         
         composerViewModel = ComposerToolbarViewModel(initialText: nil,
                                                      roomProxy: parameters.roomProxy,
+                                                     timelineController: parameters.timelineController,
+                                                     videoNoteProcessor: VideoNoteProcessor(),
                                                      wysiwygViewModel: wysiwygViewModel,
                                                      completionSuggestionService: parameters.completionSuggestionService,
                                                      mediaProvider: parameters.userSession.mediaProvider,
