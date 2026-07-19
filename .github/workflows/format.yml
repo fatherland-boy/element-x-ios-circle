@@ -14,9 +14,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: nschloe/action-cached-lfs-checkout@385a8ecc719e50b8c71af6ab01a624b486b7c3bc
+        uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: Setup environment
         run: source ci_scripts/ci_common.sh && setup_github_actions_environment
@@ -28,8 +29,21 @@ jobs:
             echo "Changes detected after formatting. Committing..."
             git config --global user.name "github-actions[bot]"
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+            # Debugging authentication and environment
+            echo "--- Git Remote ---"
+            git remote -v
+            echo "--- Git Config ---"
+            git config --list
+            echo "--- GITHUB Env ---"
+            env | grep GITHUB || echo "No GITHUB env vars found"
+
             git add .
             git commit -m "style: apply swiftformat"
+
+            # Explicitly set remote to use GITHUB_TOKEN for authentication
+            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
             git push origin HEAD:${{ github.ref }}
           else
             echo "No formatting changes needed."
