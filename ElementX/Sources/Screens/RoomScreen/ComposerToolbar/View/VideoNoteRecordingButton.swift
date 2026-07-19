@@ -16,18 +16,18 @@ enum VideoNoteRecordingButtonMode {
 
 struct VideoNoteRecordingButton: View {
     @Environment(\.isEnabled) private var isEnabled
-
+    
     let mode: VideoNoteRecordingButtonMode
     var startRecording: (() -> Void)?
     var stopRecording: (() -> Void)?
-
+    
     private let impactFeedbackGenerator = UIImpactFeedbackGenerator()
-
+    
     private var recordIconColour: Color {
         guard isEnabled else { return .compound.iconDisabled }
         return Compound.supportsGlass ? .compound.iconPrimary : .compound.iconSecondary
     }
-
+    
     var body: some View {
         Button {
             impactFeedbackGenerator.impactOccurred()
@@ -62,7 +62,7 @@ struct VideoNoteRecordingButton: View {
 
 private struct VideoNoteRecordingButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
-
+    
     func makeBody(configuration: Configuration) -> some View {
         if #available(iOS 26, *) {
             if isEnabled {

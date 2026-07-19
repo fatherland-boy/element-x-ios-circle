@@ -29,7 +29,7 @@ nonisolated protocol VideoNoteRecorderProtocol: AnyObject, Sendable {
     var currentTime: TimeInterval { get }
     var isRecording: Bool { get }
     var videoFileURL: URL? { get }
-
+    
     func record(videoFileURL: URL) async
     func stopRecording() async
     func deleteRecording() async

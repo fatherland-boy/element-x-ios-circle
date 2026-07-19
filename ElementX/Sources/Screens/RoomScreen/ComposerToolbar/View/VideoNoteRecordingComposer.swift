@@ -12,7 +12,7 @@ import SwiftUI
 
 struct VideoNoteRecordingComposer: View {
     @ObservedObject var recorderState: VideoNoteRecorderState
-
+    
     var body: some View {
         VideoNoteRecordingView(recorderState: recorderState)
             .padding(.vertical, Compound.supportsGlass ? 14 : 8)
@@ -28,7 +28,7 @@ struct VideoNoteRecordingComposer: View {
 
 struct VideoNoteRecordingComposer_Previews: PreviewProvider, TestablePreview {
     static let recorderState = VideoNoteRecorderState()
-
+    
     static var previews: some View {
         VideoNoteRecordingComposer(recorderState: recorderState)
             .fixedSize(horizontal: false, vertical: true)
