@@ -486,7 +486,7 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
             break
         }
     }
-
+    
     private func processVideoNoteAction(_ action: ComposerToolbarVideoMessageAction) {
         switch action {
         case .startRecording:
@@ -516,23 +516,23 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
                   let recorder = state.videoRecorder else {
                 return
             }
-
+            
             Task {
                 guard let url = recorder.videoFileURL else { return }
-
+                
                 do {
                     let processedURL = try await videoNoteProcessor.processVideo(at: url, maxUploadSize: 10 * 1024 * 1024)
                     let thumbnailURL = try await videoNoteProcessor.generateThumbnail(from: processedURL)
-
+                    
                     // Note: In a real scenario, we'd construct VideoInfo from the processed asset.
                     let videoInfo = VideoInfoProxy.mockVideo
-
+                    
                     let result = await timelineController.sendVideoNote(url: processedURL,
-                                                                      thumbnailURL: thumbnailURL,
-                                                                      videoInfo: videoInfo,
-                                                                      caption: nil,
-                                                                      requestHandle: { _ in })
-
+                                                                        thumbnailURL: thumbnailURL,
+                                                                        videoInfo: videoInfo,
+                                                                        caption: nil,
+                                                                        requestHandle: { _ in })
+                    
                     if case .failure(let error) = result {
                         MXLog.error("Failed to send video note: \(error)")
                     }

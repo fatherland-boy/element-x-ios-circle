@@ -129,13 +129,13 @@ protocol TimelineControllerProtocol: Sendable {
                    videoInfo: VideoInfo,
                    caption: String?,
                    requestHandle: @MainActor (SendAttachmentJoinHandleProtocol) -> Void) async -> Result<Void, TimelineControllerError>
-
+    
     func sendVideoNote(url: URL,
-                      thumbnailURL: URL,
-                      videoInfo: VideoInfo,
-                      caption: String?,
-                      requestHandle: @MainActor (SendAttachmentJoinHandleProtocol) -> Void) async -> Result<Void, TimelineControllerError>
-
+                       thumbnailURL: URL,
+                       videoInfo: VideoInfo,
+                       caption: String?,
+                       requestHandle: @MainActor (SendAttachmentJoinHandleProtocol) -> Void) async -> Result<Void, TimelineControllerError>
+    
     func sendVoiceMessage(url: URL,
                           audioInfo: AudioInfo,
                           waveform: [Float],

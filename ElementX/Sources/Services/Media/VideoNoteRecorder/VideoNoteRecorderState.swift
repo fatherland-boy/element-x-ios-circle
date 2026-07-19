@@ -18,14 +18,14 @@ enum VideoNoteRecordingState {
 
 class VideoNoteRecorderState: ObservableObject, Identifiable {
     let id = UUID()
-
+    
     @Published private(set) var recordingState: VideoNoteRecordingState = .stopped
     @Published private(set) var duration = 0.0
-
+    
     weak var videoRecorder: VideoNoteRecorderProtocol?
     private var cancellables: Set<AnyCancellable> = []
     private var displayLink: CADisplayLink?
-
+    
     func attachVideoRecorder(_ videoRecorder: VideoNoteRecorderProtocol) {
         recordingState = .stopped
         self.videoRecorder = videoRecorder
@@ -35,7 +35,7 @@ class VideoNoteRecorderState: ObservableObject, Identifiable {
             startPublishUpdates()
         }
     }
-
+    
     func detachVideoRecorder() async {
         if let videoRecorder, videoRecorder.isRecording {
             await videoRecorder.stopRecording()
@@ -45,13 +45,13 @@ class VideoNoteRecorderState: ObservableObject, Identifiable {
         videoRecorder = nil
         recordingState = .stopped
     }
-
+    
     func reportError() {
         recordingState = .error
     }
-
+    
     // MARK: - Private
-
+    
     private func subscribeToVideoRecorder(_ videoRecorder: VideoNoteRecorderProtocol) {
         videoRecorder.actions
             .receive(on: DispatchQueue.main)
@@ -63,7 +63,7 @@ class VideoNoteRecorderState: ObservableObject, Identifiable {
             }
             .store(in: &cancellables)
     }
-
+    
     private func handleVideoRecorderAction(_ action: VideoNoteRecorderAction) {
         switch action {
         case .didStartRecording:
@@ -77,7 +77,7 @@ class VideoNoteRecorderState: ObservableObject, Identifiable {
             recordingState = .stopped
         }
     }
-
+    
     private func startPublishUpdates() {
         if displayLink != nil {
             stopPublishUpdates()
@@ -86,14 +86,14 @@ class VideoNoteRecorderState: ObservableObject, Identifiable {
         displayLink?.preferredFrameRateRange = .init(minimum: 30, maximum: 60)
         displayLink?.add(to: .current, forMode: .common)
     }
-
+    
     // periphery:ignore:parameters displayLink - required for objc selector
     @objc private func publishUpdate(displayLink: CADisplayLink) {
         if let currentTime = videoRecorder?.currentTime {
             duration = currentTime
         }
     }
-
+    
     private func stopPublishUpdates() {
         displayLink?.invalidate()
         displayLink = nil

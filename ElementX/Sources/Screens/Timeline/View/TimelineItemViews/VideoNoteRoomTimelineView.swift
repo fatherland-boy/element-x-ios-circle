@@ -11,13 +11,13 @@ import SwiftUI
 struct VideoNoteRoomTimelineView: View {
     @Environment(\.timelineContext) private var context
     let timelineItem: VideoNoteRoomTimelineItem
-
+    
     @State private var contentScanningFailure: ContentScanningFailure?
-
+    
     private var hasMediaCaption: Bool {
         timelineItem.content.caption != nil
     }
-
+    
     var body: some View {
         TimelineStyler(timelineItem: timelineItem) {
             VStack(alignment: .leading, spacing: contentScanningFailure == nil ? 4 : 8) {
@@ -39,7 +39,7 @@ struct VideoNoteRoomTimelineView: View {
                 } unsafeContent: { failure in
                     ContentScanningFailureView(failure: failure)
                 }
-
+                
                 if let attributedCaption = timelineItem.content.formattedCaption {
                     FormattedBodyText(attributedString: attributedCaption,
                                       trailingReservedSize: timelineItem.trailingReservedSize,
@@ -53,7 +53,7 @@ struct VideoNoteRoomTimelineView: View {
             .onPreferenceChange(ContentScanningFailurePreferenceKey.self) { contentScanningFailure = $0 }
         }
     }
-
+    
     @ViewBuilder
     var thumbnail: some View {
         if let thumbnailSource = timelineItem.content.thumbnailInfo?.source {
@@ -71,7 +71,7 @@ struct VideoNoteRoomTimelineView: View {
             playIcon
         }
     }
-
+    
     var playIcon: some View {
         CompoundIcon(\.playSolid, size: .medium, relativeTo: .compound.headingLG)
             .foregroundStyle(.compound.iconPrimary)
@@ -83,7 +83,7 @@ struct VideoNoteRoomTimelineView: View {
                 }
             }
     }
-
+    
     var placeholder: some View {
         Rectangle()
             .foregroundStyle(timelineItem.isOutgoing ? .compound._bgBubbleOutgoing : .compound._bgBubbleIncoming)
@@ -93,7 +93,7 @@ struct VideoNoteRoomTimelineView: View {
 
 struct VideoNoteRoomTimelineView_Previews: PreviewProvider, TestablePreview {
     static let viewModel = TimelineViewModel.mock
-
+    
     static var previews: some View {
         ScrollView {
             VStack(spacing: 20.0) {
@@ -106,7 +106,7 @@ struct VideoNoteRoomTimelineView_Previews: PreviewProvider, TestablePreview {
         .previewLayout(.fixed(width: 390, height: 975))
         .padding(.bottom, 20)
     }
-
+    
     private static func makeTimelineItem(caption: String? = nil) -> VideoNoteRoomTimelineItem {
         VideoNoteRoomTimelineItem(id: .randomEvent,
                                   timestamp: .mock,

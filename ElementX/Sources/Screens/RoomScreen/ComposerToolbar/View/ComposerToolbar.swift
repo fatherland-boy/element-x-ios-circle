@@ -109,7 +109,7 @@ struct ComposerToolbar: View {
                     HStack(spacing: 8) {
                         voiceMessageRecordingButton(mode: context.viewState.isVoiceMessageModeActivated ? .recording : .idle)
                             .scaledPadding(.vertical, trailingButtonVerticalPadding, relativeTo: .compound.headingLG)
-
+                        
                         videoNoteRecordingButton(mode: context.viewState.isVideoNoteModeActivated ? .recording : .idle)
                             .scaledPadding(.vertical, trailingButtonVerticalPadding, relativeTo: .compound.headingLG)
                     }
@@ -153,7 +153,7 @@ struct ComposerToolbar: View {
             }
         }
     }
-
+    
     private var closeRTEButton: some View {
         Button {
             context.composerFormattingEnabled = false
@@ -305,7 +305,7 @@ struct ComposerToolbar: View {
             EmptyView()
         }
     }
-
+    
     private func voiceMessageRecordingButton(mode: VoiceMessageRecordingButtonMode) -> some View {
         VoiceMessageRecordingButton(mode: mode) {
             context.send(viewAction: .voiceMessage(.startRecording))
@@ -313,7 +313,7 @@ struct ComposerToolbar: View {
             context.send(viewAction: .voiceMessage(.stopRecording))
         }
     }
-
+    
     private func videoNoteRecordingButton(mode: VideoNoteRecordingButtonMode) -> some View {
         VideoNoteRecordingButton(mode: mode) {
             context.send(viewAction: .videoNote(.startRecording))
@@ -321,21 +321,21 @@ struct ComposerToolbar: View {
             context.send(viewAction: .videoNote(.stopRecording))
         }
     }
-
+    
     private var voiceMessageTrashButton: some View {
         VoiceMessageTrashButton {
             context.send(viewAction: .voiceMessage(.deleteRecording))
         }
         .accessibilityLabel(L10n.a11yDelete)
     }
-
+    
     private var videoNoteTrashButton: some View {
         VoiceMessageTrashButton {
             context.send(viewAction: .videoNote(.deleteRecording))
         }
         .accessibilityLabel(L10n.a11yDelete)
     }
-
+    
     private func voiceMessagePreviewComposer(audioPlayerState: AudioPlayerState, waveform: WaveformSource) -> some View {
         VoiceMessagePreviewComposer(playerState: audioPlayerState, waveform: waveform) {
             context.send(viewAction: .voiceMessage(.startPlayback))

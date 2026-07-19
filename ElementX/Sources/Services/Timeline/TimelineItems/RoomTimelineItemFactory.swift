@@ -261,12 +261,12 @@ nonisolated struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
                                                 encryptionAuthenticity: buildEncryptionAuthenticity(eventItemProxy.shieldState),
                                                 encryptionForwarder: eventItemProxy.forwarder))
     }
-
+    
     private func buildVideoNoteTimelineItem(for eventItemProxy: EventTimelineItemProxy,
-                                              _ messageLikeContent: MsgLikeContent,
-                                              _ messageContent: MessageContent,
-                                              _ videoMessageContent: VideoMessageContent,
-                                              _ isOutgoing: Bool) -> RoomTimelineItemProtocol {
+                                            _ messageLikeContent: MsgLikeContent,
+                                            _ messageContent: MessageContent,
+                                            _ videoMessageContent: VideoMessageContent,
+                                            _ isOutgoing: Bool) -> RoomTimelineItemProtocol {
         VideoNoteRoomTimelineItem(id: eventItemProxy.id,
                                   timestamp: eventItemProxy.timestamp,
                                   isOutgoing: isOutgoing,
@@ -285,7 +285,7 @@ nonisolated struct RoomTimelineItemFactory: RoomTimelineItemFactoryProtocol {
                                                     encryptionAuthenticity: buildEncryptionAuthenticity(eventItemProxy.shieldState),
                                                     encryptionForwarder: eventItemProxy.forwarder))
     }
-
+    
     private func isVideoNote(_ eventItemProxy: EventTimelineItemProxy) -> Bool {
         guard let originalJSON = eventItemProxy.debugInfo.originalJSON else {
             return false
