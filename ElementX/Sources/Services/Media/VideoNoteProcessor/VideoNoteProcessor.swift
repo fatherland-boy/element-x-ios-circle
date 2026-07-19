@@ -105,25 +105,23 @@ final class VideoNoteProcessor: VideoNoteProcessorProtocol {
         try data.write(to: thumbnailURL)
         return thumbnailURL
     }
-
+    
     func extractVideoInfo(from url: URL) async throws -> MatrixRustSDK.VideoInfo {
         let asset = AVAsset(url: url)
         let duration = try await asset.load(.duration).seconds
-
+        
         guard let videoTrack = try await asset.loadTracks(withMediaType: .video).first else {
             throw NSError(domain: "VideoNoteProcessor", code: 6, userInfo: [NSLocalizedDescriptionKey: "No video track found for metadata extraction"])
         }
-
+        
         let naturalSize = try await videoTrack.load(.naturalSize)
         let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
         let fileSize = attributes[.size] as? UInt64 ?? 0
-
-        return MatrixRustSDK.VideoInfo(
-            duration: duration,
-            width: UInt64(naturalSize.width),
-            height: UInt64(naturalSize.height),
-            fileSize: fileSize
-        )
+        
+        return MatrixRustSDK.VideoInfo(duration: duration,
+                                       width: UInt64(naturalSize.width),
+                                       height: UInt64(naturalSize.height),
+                                       fileSize: fileSize)
     }
 }
 

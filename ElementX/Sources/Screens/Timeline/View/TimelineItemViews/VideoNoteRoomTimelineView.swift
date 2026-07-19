@@ -1,4 +1,6 @@
 //
+import AVKit
+
 // Copyright 2025 Element Creations Ltd.
 // Copyright 2022-2025 New Vector Ltd.
 //
@@ -7,7 +9,6 @@
 //
 import Compound
 import SwiftUI
-import AVKit
 
 struct VideoNoteRoomTimelineView: View {
     @Environment(\.timelineContext) private var context
@@ -33,9 +34,9 @@ struct VideoNoteRoomTimelineView: View {
                             .onTapGesture {
                                 context?.send(viewAction: .mediaTapped(itemID: timelineItem.id))
                             }
-
+                        
                         CircularVideoPlayer(source: timelineItem.content.videoInfo.source,
-                                           mediaProvider: context?.mediaProvider)
+                                            mediaProvider: context?.mediaProvider)
                             .timelineMediaFrame(imageInfo: timelineItem.content.thumbnailInfo)
                             .clipShape(Circle())
                             .onTapGesture {
@@ -105,9 +106,9 @@ struct VideoNoteRoomTimelineView: View {
 struct CircularVideoPlayer: View {
     let source: MediaSourceProxy
     let mediaProvider: MediaProviderProtocol?
-
+    
     @State private var player: AVPlayer?
-
+    
     var body: some View {
         Group {
             if let player = player {
@@ -126,21 +127,21 @@ struct CircularVideoPlayer: View {
             await loadVideo()
         }
     }
-
+    
     private func loadVideo() async {
         guard let mediaProvider = mediaProvider else { return }
-
+        
         do {
             // Resolve the source to a URL
             let url = try await mediaProvider.resolveURL(for: source)
             let playerItem = AVPlayerItem(url: url)
-
+            
             // Setup looping
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { _ in
                 player?.seek(to: .zero)
                 player?.play()
             }
-
+            
             let player = AVPlayer(playerItem: playerItem)
             player.isMuted = true
             self.player = player
