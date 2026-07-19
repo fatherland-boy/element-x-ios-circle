@@ -84,15 +84,15 @@ struct RoomAttachmentPicker_Previews: PreviewProvider, TestablePreview {
         let appSettings = AppSettings.volatile()
         
         return ComposerToolbarViewModel(roomProxy: JoinedRoomProxyMock(.init()),
-                                            timelineController: TimelineControllerMock(.init()),
-                                            videoNoteProcessor: VideoNoteProcessor(),
-                                            wysiwygViewModel: WysiwygComposerViewModel(),
-                                            completionSuggestionService: CompletionSuggestionServiceMock(configuration: .init()),
-                                            mediaProvider: MediaProviderMock(.init()),
-                                            mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
-                                            appSettings: appSettings,
-                                            analyticsService: AnalyticsServiceMock(.init()),
-                                            composerDraftService: ComposerDraftServiceMock(.init()))
+                                        timelineController: TimelineControllerMock(.init()),
+                                        videoNoteProcessor: VideoNoteProcessor(),
+                                        wysiwygViewModel: WysiwygComposerViewModel(),
+                                        completionSuggestionService: CompletionSuggestionServiceMock(configuration: .init()),
+                                        mediaProvider: MediaProviderMock(.init()),
+                                        mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
+                                        appSettings: appSettings,
+                                        analyticsService: AnalyticsServiceMock(.init()),
+                                        composerDraftService: ComposerDraftServiceMock(.init()))
     }
     
     static var previews: some View {

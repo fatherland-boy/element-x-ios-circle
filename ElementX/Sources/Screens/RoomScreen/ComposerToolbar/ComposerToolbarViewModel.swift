@@ -887,15 +887,15 @@ extension ComposerToolbarViewModel {
         
         let wysiwygViewModel = WysiwygComposerViewModel()
         let viewModel = ComposerToolbarViewModel(roomProxy: roomProxy,
-                                                     timelineController: TimelineControllerMock(.init()),
-                                                     videoNoteProcessor: VideoNoteProcessor(),
-                                                     wysiwygViewModel: wysiwygViewModel,
-                                                     completionSuggestionService: CompletionSuggestionServiceMock(configuration: .init(suggestions: suggestions)),
-                                                     mediaProvider: MediaProviderMock(.init()),
-                                                     mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
-                                                     appSettings: .volatile(),
-                                                     analyticsService: AnalyticsServiceMock(.init()),
-                                                     composerDraftService: ComposerDraftServiceMock(.init()))
+                                                 timelineController: TimelineControllerMock(.init()),
+                                                 videoNoteProcessor: VideoNoteProcessor(),
+                                                 wysiwygViewModel: wysiwygViewModel,
+                                                 completionSuggestionService: CompletionSuggestionServiceMock(configuration: .init(suggestions: suggestions)),
+                                                 mediaProvider: MediaProviderMock(.init()),
+                                                 mentionDisplayHelper: ComposerMentionDisplayHelper.mock,
+                                                 appSettings: .volatile(),
+                                                 analyticsService: AnalyticsServiceMock(.init()),
+                                                 composerDraftService: ComposerDraftServiceMock(.init()))
         viewModel.state.bindings.composerFocused = focused
         viewModel.state.bindings.plainComposerText = NSAttributedString(string: message)
         
