@@ -523,16 +523,8 @@ final class ComposerToolbarViewModel: ComposerToolbarViewModelType, ComposerTool
                 do {
                     let processedURL = try await videoNoteProcessor.processVideo(at: url, maxUploadSize: 10 * 1024 * 1024)
                     let thumbnailURL = try await videoNoteProcessor.generateThumbnail(from: processedURL)
-<<<<<<< HEAD
 
                     let videoInfo = try await videoNoteProcessor.extractVideoInfo(from: processedURL)
-
-=======
-                    
-                    // Note: In a real scenario, we'd construct VideoInfo from the processed asset.
-                    let videoInfo = VideoInfoProxy.mockVideo
-                    
->>>>>>> 9486997a7cd5ed51ec1e3cd4cf3a308cc9e58b00
                     let result = await timelineController.sendVideoNote(url: processedURL,
                                                                         thumbnailURL: thumbnailURL,
                                                                         videoInfo: videoInfo,

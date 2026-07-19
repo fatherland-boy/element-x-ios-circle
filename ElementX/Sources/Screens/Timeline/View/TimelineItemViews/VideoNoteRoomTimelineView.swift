@@ -150,8 +150,6 @@ struct CircularVideoPlayer: View {
     }
 }
 
-}
-
 struct VideoNoteRoomTimelineView_Previews: PreviewProvider, TestablePreview {
     static let viewModel = TimelineViewModel.mock
     
