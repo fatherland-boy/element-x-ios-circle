@@ -18,7 +18,7 @@ enum VideoNoteRecorderStatus {
 
 class VideoNoteRecorderState: ObservableObject, Identifiable {
     let id = UUID()
-
+    
     @Published private(set) var recordingState: VideoNoteRecorderStatus = .stopped
     @Published private(set) var duration = 0.0
     
