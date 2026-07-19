@@ -353,16 +353,16 @@ extension FormatType {
     }
 }
 
-enum ComposerMode: Equatable {
-    enum EditType { case `default`, addCaption, editCaption }
-    
+enum ComposerMode {
+    enum EditType: Equatable { case `default`, addCaption, editCaption }
+
     case `default`
     case reply(eventID: String, replyDetails: TimelineItemReplyDetails, isThread: Bool)
     case edit(originalEventOrTransactionID: TimelineItemIdentifier.EventOrTransactionID, type: EditType)
     case recordVoiceMessage(state: AudioRecorderState)
     case recordVideoNote(state: VideoNoteRecorderState)
     case previewVoiceMessage(state: AudioPlayerState, waveform: WaveformSource, isUploading: Bool)
-    
+
     var isEdit: Bool {
         switch self {
         case .edit:
@@ -371,7 +371,7 @@ enum ComposerMode: Equatable {
             return false
         }
     }
-    
+
     var isTextEditingEnabled: Bool {
         switch self {
         case .default, .reply, .edit:
@@ -380,7 +380,7 @@ enum ComposerMode: Equatable {
             return false
         }
     }
-    
+
     var isLoadingReply: Bool {
         switch self {
         case .reply(_, let replyDetails, _):
@@ -394,7 +394,7 @@ enum ComposerMode: Equatable {
             return false
         }
     }
-    
+
     var replyEventID: String? {
         switch self {
         case .reply(let eventID, _, _):
@@ -403,11 +403,32 @@ enum ComposerMode: Equatable {
             return nil
         }
     }
-    
+
     var isComposingNewMessage: Bool {
         switch self {
         case .default, .reply:
             return true
+        default:
+            return false
+        }
+    }
+}
+
+extension ComposerMode: Equatable {
+    static func == (lhs: ComposerMode, rhs: ComposerMode) -> Bool {
+        switch (lhs, rhs) {
+        case (.default, .default):
+            return true
+        case let (.reply(lID, lDetails, lThread), .reply(rID, rDetails, rThread)):
+            return lID == rID && lDetails == rDetails && lThread == rThread
+        case let (.edit(lID, lType), .edit(rID, rType)):
+            return lID == rID && lType == rType
+        case let (.recordVoiceMessage(lState), .recordVoiceMessage(rState)):
+            return lState == rState
+        case let (.recordVideoNote(lState), .recordVideoNote(rState)):
+            return lState == rState
+        case let (.previewVoiceMessage(lState, lWave, lUpload), .previewVoiceMessage(rState, rWave, rUpload)):
+            return lState == rState && lWave == rWave && lUpload == rUpload
         default:
             return false
         }
