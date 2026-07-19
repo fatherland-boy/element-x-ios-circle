@@ -10,7 +10,7 @@ import Combine
 import Foundation
 import UIKit
 
-enum VideoNoteRecordingState {
+enum VideoNoteRecorderStatus {
     case recording
     case stopped
     case error
@@ -18,8 +18,8 @@ enum VideoNoteRecordingState {
 
 class VideoNoteRecorderState: ObservableObject, Identifiable {
     let id = UUID()
-    
-    @Published private(set) var recordingState: VideoNoteRecordingState = .stopped
+
+    @Published private(set) var recordingState: VideoNoteRecorderStatus = .stopped
     @Published private(set) var duration = 0.0
     
     weak var videoRecorder: VideoNoteRecorderProtocol?
