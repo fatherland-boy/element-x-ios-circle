@@ -355,14 +355,14 @@ extension FormatType {
 
 enum ComposerMode {
     enum EditType: Equatable { case `default`, addCaption, editCaption }
-
+    
     case `default`
     case reply(eventID: String, replyDetails: TimelineItemReplyDetails, isThread: Bool)
     case edit(originalEventOrTransactionID: TimelineItemIdentifier.EventOrTransactionID, type: EditType)
     case recordVoiceMessage(state: AudioRecorderState)
     case recordVideoNote(state: VideoNoteRecorderState)
     case previewVoiceMessage(state: AudioPlayerState, waveform: WaveformSource, isUploading: Bool)
-
+    
     var isEdit: Bool {
         switch self {
         case .edit:
@@ -371,7 +371,7 @@ enum ComposerMode {
             return false
         }
     }
-
+    
     var isTextEditingEnabled: Bool {
         switch self {
         case .default, .reply, .edit:
@@ -380,7 +380,7 @@ enum ComposerMode {
             return false
         }
     }
-
+    
     var isLoadingReply: Bool {
         switch self {
         case .reply(_, let replyDetails, _):
@@ -394,7 +394,7 @@ enum ComposerMode {
             return false
         }
     }
-
+    
     var replyEventID: String? {
         switch self {
         case .reply(let eventID, _, _):
@@ -403,7 +403,7 @@ enum ComposerMode {
             return nil
         }
     }
-
+    
     var isComposingNewMessage: Bool {
         switch self {
         case .default, .reply:
